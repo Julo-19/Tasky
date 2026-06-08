@@ -10,10 +10,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(        // ← pas de const ici
+    return MaterialApp(        
       title: 'Tasky',
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),   // ← pas de const ici non plus
+      home: SplashScreen(), 
     );
   }
 }
