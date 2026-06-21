@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tasky/widgets/text_field.widget.dart';
 import 'package:tasky/widgets/button.widget.dart';
 import 'package:tasky/screens/register_screen.dart';
+import 'package:tasky/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -71,7 +72,12 @@ class LoginScreen extends StatelessWidget {
             SizedBox(height: 32),
             AppButton(
               label: 'Se Connecter',
-              onTap: () {},
+              onTap: () {
+                Navigator.pushReplacement(
+                  context, 
+                  MaterialPageRoute(builder: (_) => HomeScreen()),
+                );
+              },
             ),
             SizedBox(height: 24),
 

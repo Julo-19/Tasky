@@ -8,6 +8,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
+//etat
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
@@ -22,7 +23,6 @@ class _SplashScreenState extends State<SplashScreen> {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            // Image de fond
             Image.asset(
               'assets/images/bg-splash.png',
               fit: BoxFit.cover,

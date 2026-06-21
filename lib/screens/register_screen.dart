@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:tasky/widgets/text_field.widget.dart';
 import 'package:tasky/widgets/button.widget.dart';
 
-class RegisterScreen extends StatelessWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+  bool _isChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +39,7 @@ class RegisterScreen extends StatelessWidget {
             ),
             SizedBox(height: 8),
             const Text(
-              'Quelques secondes et c’est parti.',
+              'Quelques secondes et c\'est parti.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
@@ -43,9 +50,8 @@ class RegisterScreen extends StatelessWidget {
             AppTextField(
               label: 'Nom complet',
               hintText: 'Souleymane BARRO',
-               prefixIcon: Icons.person_outline,
+              prefixIcon: Icons.person_outline,
             ),
-
             SizedBox(height: 24),
             AppTextField(
               label: 'Adresse Email',
@@ -59,13 +65,16 @@ class RegisterScreen extends StatelessWidget {
               prefixIcon: Icons.lock_outline,
               obscureText: true,
             ),
-            
             SizedBox(height: 16),
             Row(
               children: [
                 Checkbox(
-                  value: false,
-                  onChanged: (value) {},
+                  value: _isChecked,
+                  onChanged: (value) {
+                    setState(() {
+                      _isChecked = value!;
+                    });
+                  },
                   activeColor: Color(0xFFFF6B5C),
                 ),
                 Expanded(
@@ -126,7 +135,6 @@ class RegisterScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
           ],
         ),
       ),

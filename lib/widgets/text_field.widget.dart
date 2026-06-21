@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 class AppTextField extends StatelessWidget {
   final String label;
   final String hintText;
-  final IconData prefixIcon;
+  final IconData? prefixIcon;
   final bool obscureText;
+  final int maxLines;
 
   const AppTextField({
     super.key,
     required this.label,
     required this.hintText,
-    required this.prefixIcon,
+    this.prefixIcon,
     this.obscureText = false,
+    this.maxLines = 1,
   });
 
   @override
@@ -21,7 +23,7 @@ class AppTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             color: Color(0xFF1A1A2E),
             fontWeight: FontWeight.w500,
@@ -30,9 +32,14 @@ class AppTextField extends StatelessWidget {
         SizedBox(height: 8),
         TextField(
           obscureText: obscureText,
+          maxLines: maxLines,
           decoration: InputDecoration(
-            hintText: hintText, 
-            prefixIcon: Icon(prefixIcon, color: Colors.grey),
+            hintText: hintText,
+            prefixIcon: prefixIcon != null
+                ? Icon(prefixIcon, color: Colors.grey)
+                : null,
+            filled: true,
+            fillColor: Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide(color: Colors.grey.shade300),
