@@ -36,6 +36,29 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+String _formatTime(DateTime? dueDate) {
+  if (dueDate == null) return '';
+  final local = dueDate.toLocal();
+  final now = DateTime.now();
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  final time = '$hour:$minute';
+
+  // Aujourd'hui
+  if (local.day == now.day && local.month == now.month && local.year == now.year) {
+    return 'Aujourd\'hui $time';
+  }
+
+  
+  final tomorrow = now.add(Duration(days: 1));
+  if (local.day == tomorrow.day && local.month == tomorrow.month && local.year == tomorrow.year) {
+    return 'Demain $time';
+  }
+
+  // Sinon la date
+  return '${local.day}/${local.month} $time';
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return TaskItem(
                         title: task.title,
                         description: task.content,
-                        time: '',
+                        time: _formatTime(task.dueDate),
                         priority: _priorityColor(task.priority),
                       );
                     },

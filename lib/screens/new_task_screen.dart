@@ -14,20 +14,18 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
-
   final TaskController _taskController = TaskController();
-  //stoke
+  // Stockage
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   String _selectedPriority = 'Moyenne';
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay(hour: 12, minute: 0);
 
-  @override
   Future<void> _createTask() async {
-
-  // Validation title required 
+    // titre requires
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        //message temporaire
         SnackBar(content: Text('Le titre est obligatoire')),
       );
       return;
@@ -39,23 +37,30 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         content: _contentController.text,
         priority: _selectedPriority,
         color: 'red',
-        dueDate: DateTime.now(),
+        dueDate: DateTime(
+          _selectedDate.year,
+          _selectedDate.month,
+          _selectedDate.day,
+          _selectedTime.hour,
+          _selectedTime.minute,
+        ),
       );
 
       // Succès redirige home
       if (mounted) {
         Navigator.pop(context);
       }
-      } catch (e) {
-        // Erreur (show message)
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erreur lors de la création')),
-          );
-        }
+    } catch (e) {
+      // Erreur
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur lors de la création')),
+        );
       }
-}
+    }
+  }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
@@ -118,7 +123,14 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 },
               ),
               SizedBox(height: 24),
-              DateTimeSelector(),
+              DateTimeSelector(
+                onDateChanged: (date) {
+                  _selectedDate = date;
+                },
+                onTimeChanged: (time) {
+                  _selectedTime = time;
+                },
+              ),
               SizedBox(height: 24),
               Text(
                 'Catégorie',

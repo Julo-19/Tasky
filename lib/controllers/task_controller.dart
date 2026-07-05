@@ -2,7 +2,7 @@ import 'package:tasky/models/task_model.dart';
 import 'package:tasky/services/task_service.dart';
 
 class TaskController {
-  // Récupérer toutes les tâches
+  // Récupérer les tâches
   Future<List<Task>> fetchTasks() {
     return TaskService.getTasks();
   }

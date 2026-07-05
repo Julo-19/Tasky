@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DateTimeSelector extends StatefulWidget {
@@ -18,36 +19,83 @@ class _DateTimeSelectorState extends State<DateTimeSelector> {
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay(hour: 12, minute: 0);
 
-  // Ouvre le calendrier
-  Future<void> _pickDate() async {
-    final DateTime? picked = await showDatePicker(
+  // calendrier
+  void _pickDate() {
+    showCupertinoModalPopup(
       context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2030),
+      builder: (context) => Container(
+        height: 300,
+        color: Colors.white,
+        child: Column(
+          children: [
+            // Bouton OK
+            Align(
+              alignment: Alignment.centerRight,
+              child: CupertinoButton(
+                child: Text('OK', style: TextStyle(color: Color(0xFFFF6B5C))),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            // La roue
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: _selectedDate,
+                minimumDate: DateTime.now().subtract(Duration(days: 1)),
+                maximumDate: DateTime(2030),
+                onDateTimeChanged: (DateTime picked) {
+                  setState(() {
+                    _selectedDate = picked;
+                  });
+                  widget.onDateChanged?.call(picked);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
-
-    if (picked != null) {
-      setState(() {
-        _selectedDate = picked;
-      });
-      widget.onDateChanged?.call(picked);
-    }
   }
 
-  // Ouvre l'horloge
-  Future<void> _pickTime() async {
-    final TimeOfDay? picked = await showTimePicker(
+  void _pickTime() {
+    showCupertinoModalPopup(
       context: context,
-      initialTime: _selectedTime,
+      builder: (context) => Container(
+        height: 300,
+        color: Colors.white,
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: CupertinoButton(
+                child: Text('OK', style: TextStyle(color: Color(0xFFFF6B5C))),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.time,
+                use24hFormat: true,
+                initialDateTime: DateTime(
+                  2026, 1, 1,
+                  _selectedTime.hour,
+                  _selectedTime.minute,
+                ),
+                onDateTimeChanged: (DateTime picked) {
+                  setState(() {
+                    _selectedTime = TimeOfDay(
+                      hour: picked.hour,
+                      minute: picked.minute,
+                    );
+                  });
+                  widget.onTimeChanged?.call(_selectedTime);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
     );
-
-    if (picked != null) {
-      setState(() {
-        _selectedTime = picked;
-      });
-      widget.onTimeChanged?.call(picked);
-    }
   }
 
   // Formate la date pour l'affichage

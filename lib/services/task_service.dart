@@ -5,7 +5,7 @@ import 'package:tasky/models/task_model.dart';
 class TaskService {
   static const String baseUrl = 'http://localhost:3000';
 
-//Get Task
+
   static Future<List<Task>> getTasks() async {
     final response = await http.get(Uri.parse('$baseUrl/task'));
 
@@ -17,7 +17,7 @@ class TaskService {
     }
   }
 
-  //Creer Task
+  
   static Future<Task> createTask(Task task) async {
     final response = await http.post(
       Uri.parse('$baseUrl/task'),
