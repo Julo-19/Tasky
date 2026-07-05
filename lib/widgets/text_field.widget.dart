@@ -6,6 +6,7 @@ class AppTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final bool obscureText;
   final int maxLines;
+  final TextEditingController? controller; 
 
   const AppTextField({
     super.key,
@@ -14,6 +15,7 @@ class AppTextField extends StatelessWidget {
     this.prefixIcon,
     this.obscureText = false,
     this.maxLines = 1,
+    this.controller, 
   });
 
   @override
@@ -31,6 +33,7 @@ class AppTextField extends StatelessWidget {
         ),
         SizedBox(height: 8),
         TextField(
+          controller: controller,
           obscureText: obscureText,
           maxLines: maxLines,
           decoration: InputDecoration(

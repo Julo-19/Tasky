@@ -70,10 +70,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
               SizedBox(height: 8),
               PrioritySelector(),
               SizedBox(height: 24),
-              DateTimeSelector(
-                date: 'Aujourd\'hui',
-                time: '10:00',
-              ),
+              DateTimeSelector(),
               SizedBox(height: 24),
               Text(
                 'Catégorie',

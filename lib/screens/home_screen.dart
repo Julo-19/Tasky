@@ -4,7 +4,7 @@ import 'package:tasky/widgets/home_filter.widget.dart';
 import 'package:tasky/widgets/task_item.widget.dart';
 import 'package:tasky/widgets/bottom_nav_bar.widget.dart';
 import 'package:tasky/models/task_model.dart';
-import 'package:tasky/services/task_service.dart';
+import 'package:tasky/controllers/task_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,13 +14,27 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final TaskController _taskController = TaskController();
   late Future<List<Task>> _tasksFuture;
 
   @override
   void initState() {
     super.initState();
-    _tasksFuture = TaskService.getTasks();
+    _tasksFuture = _taskController.fetchTasks();
   }
+
+  Color _priorityColor(String priority) {
+  switch (priority) {
+    case 'Haute':
+      return Colors.red;
+    case 'Moyenne':
+      return Colors.orange;
+    case 'Basse':
+      return Colors.green;
+    default:
+      return Colors.grey;
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Color(0xFFFF6B5C),
                   onRefresh: () async {
                     setState(() {
-                      _tasksFuture = TaskService.getTasks();
+                      _tasksFuture = _taskController.fetchTasks();
                     });
                   },
                   child: ListView.builder(
@@ -72,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: task.title,
                         description: task.content,
                         time: '',
-                        priority: Colors.red,
+                        priority: _priorityColor(task.priority),
                       );
                     },
                   ),

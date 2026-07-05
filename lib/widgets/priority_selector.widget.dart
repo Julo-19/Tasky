@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PrioritySelector extends StatefulWidget {
-  const PrioritySelector({super.key});
+  final ValueChanged<String>? onChanged;
+  const PrioritySelector({super.key, this.onChanged});
 
   @override
   State<PrioritySelector> createState() => _PrioritySelectorState();
@@ -30,6 +31,7 @@ Widget build(BuildContext context) {
             setState(() {
               _selectedIndex = index;
             });
+            widget.onChanged?.call(priority['label'] as String);
           },
           child: Container(
             margin: EdgeInsets.only(right: index < 2 ? 8 : 0),

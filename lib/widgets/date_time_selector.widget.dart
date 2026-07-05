@@ -1,14 +1,72 @@
 import 'package:flutter/material.dart';
 
-class DateTimeSelector extends StatelessWidget {
-  final String date;
-  final String time;
+class DateTimeSelector extends StatefulWidget {
+  final ValueChanged<DateTime>? onDateChanged;
+  final ValueChanged<TimeOfDay>? onTimeChanged;
 
   const DateTimeSelector({
     super.key,
-    required this.date,
-    required this.time,
+    this.onDateChanged,
+    this.onTimeChanged,
   });
+
+  @override
+  State<DateTimeSelector> createState() => _DateTimeSelectorState();
+}
+
+class _DateTimeSelectorState extends State<DateTimeSelector> {
+  DateTime _selectedDate = DateTime.now();
+  TimeOfDay _selectedTime = TimeOfDay(hour: 12, minute: 0);
+
+  // Ouvre le calendrier
+  Future<void> _pickDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+      widget.onDateChanged?.call(picked);
+    }
+  }
+
+  // Ouvre l'horloge
+  Future<void> _pickTime() async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+    );
+
+    if (picked != null) {
+      setState(() {
+        _selectedTime = picked;
+      });
+      widget.onTimeChanged?.call(picked);
+    }
+  }
+
+  // Formate la date pour l'affichage
+  String get _dateLabel {
+    final now = DateTime.now();
+    if (_selectedDate.day == now.day &&
+        _selectedDate.month == now.month &&
+        _selectedDate.year == now.year) {
+      return 'Aujourd\'hui';
+    }
+    return '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}';
+  }
+
+  // Formate l'heure pour l'affichage
+  String get _timeLabel {
+    final hour = _selectedTime.hour.toString().padLeft(2, '0');
+    final minute = _selectedTime.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,22 +86,27 @@ class DateTimeSelector extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 8),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_today_outlined, size: 18, color: Color(0xFFFF6B5C)),
-                    SizedBox(width: 8),
-                    Text(
-                      date,
-                      style: TextStyle(fontSize: 14, color: Color(0xFF1A1A2E)),
-                    ),
-                  ],
+              GestureDetector(
+                onTap: _pickDate,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.calendar_today_outlined,
+                          size: 18, color: Color(0xFFFF6B5C)),
+                      SizedBox(width: 8),
+                      Text(
+                        _dateLabel,
+                        style:
+                            TextStyle(fontSize: 14, color: Color(0xFF1A1A2E)),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -64,22 +127,27 @@ class DateTimeSelector extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 8),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.access_time, size: 18, color: Color(0xFFFF6B5C)),
-                    SizedBox(width: 8),
-                    Text(
-                      time,
-                      style: TextStyle(fontSize: 14, color: Color(0xFF1A1A2E)),
-                    ),
-                  ],
+              GestureDetector(
+                onTap: _pickTime,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.access_time,
+                          size: 18, color: Color(0xFFFF6B5C)),
+                      SizedBox(width: 8),
+                      Text(
+                        _timeLabel,
+                        style:
+                            TextStyle(fontSize: 14, color: Color(0xFF1A1A2E)),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

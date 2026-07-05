@@ -4,6 +4,7 @@ import 'package:tasky/widgets/priority_selector.widget.dart';
 import 'package:tasky/widgets/date_time_selector.widget.dart';
 import 'package:tasky/widgets/category_selector.widget.dart';
 import 'package:tasky/widgets/button.widget.dart';
+import 'package:tasky/controllers/task_controller.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -13,7 +14,48 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
+
+  final TaskController _taskController = TaskController();
+  //stoke
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  String _selectedPriority = 'Moyenne';
+
   @override
+  Future<void> _createTask() async {
+
+  // Validation title required 
+    if (_titleController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        //message temporaire
+        SnackBar(content: Text('Le titre est obligatoire')),
+      );
+      return;
+    }
+
+    try {
+      await _taskController.addTask(
+        title: _titleController.text,
+        content: _contentController.text,
+        priority: _selectedPriority,
+        color: 'red',
+        dueDate: DateTime.now(),
+      );
+
+      // Succès redirige home
+      if (mounted) {
+        Navigator.pop(context);
+      }
+      } catch (e) {
+        // Erreur (show message)
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erreur lors de la création')),
+          );
+        }
+      }
+}
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
@@ -51,11 +93,13 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
               AppTextField(
                 label: 'Titre',
                 hintText: 'Ex. Créer maquette Figma',
+                controller: _titleController,
               ),
               SizedBox(height: 24),
               AppTextField(
                 label: 'Description',
                 hintText: 'Ajouter des détails...',
+                controller: _contentController,
                 maxLines: 4,
               ),
               SizedBox(height: 24),
@@ -68,12 +112,13 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 ),
               ),
               SizedBox(height: 8),
-              PrioritySelector(),
-              SizedBox(height: 24),
-              DateTimeSelector(
-                date: 'Aujourd\'hui',
-                time: '12:00',
+              PrioritySelector(
+                onChanged: (priority) {
+                  _selectedPriority = priority;
+                },
               ),
+              SizedBox(height: 24),
+              DateTimeSelector(),
               SizedBox(height: 24),
               Text(
                 'Catégorie',
@@ -88,7 +133,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
               SizedBox(height: 60),
               AppButton(
                 label: 'Créer la tâche',
-                onTap: () {},
+                onTap: _createTask,
               ),
             ],
           ),
