@@ -56,18 +56,26 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Center(child: Text('Aucune tâche pour le moment'));
                 }
 
-                return ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    final task = tasks[index];
-                    return TaskItem(
-                      title: task.title,
-                      description: task.content,
-                      time: '',
-                      priority: Colors.red,
-                    );
+                return RefreshIndicator(
+                  color: Color(0xFFFF6B5C),
+                  onRefresh: () async {
+                    setState(() {
+                      _tasksFuture = TaskService.getTasks();
+                    });
                   },
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return TaskItem(
+                        title: task.title,
+                        description: task.content,
+                        time: '',
+                        priority: Colors.red,
+                      );
+                    },
+                  ),
                 );
               },
             ),
