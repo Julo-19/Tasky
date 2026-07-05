@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tasky/widgets/task_item.widget.dart';
+import 'package:tasky/widgets/bottom_nav_bar.widget.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -13,6 +14,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
+      bottomNavigationBar: BottomNav(currentIndex: 1),
       body: Column(
         children: [
           // Header blanc

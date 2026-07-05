@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:tasky/screens/new_task_screen.dart';
 import 'package:tasky/screens/search_screen.dart';
+import 'package:tasky/screens/notifications_screen.dart';
 import 'package:tasky/screens/profile_screen.dart';
+import 'package:tasky/screens/home_screen.dart';
 
 class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+  final int currentIndex;
+
+  const BottomNav({super.key, this.currentIndex = 0});
 
   @override
   State<BottomNav> createState() => _BottomNavState();
 }
 
 class _BottomNavState extends State<BottomNav> {
-  int _selectedIndex = 0;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -30,8 +32,8 @@ class _BottomNavState extends State<BottomNav> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0, Icons.list, 'Tâches'),
-            _buildNavItem(1, Icons.search, 'Recherche'),
+            _buildNavItem(context, 0, Icons.list, 'Tâches'),
+            _buildNavItem(context, 1, Icons.search, 'Recherche'),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -49,29 +51,37 @@ class _BottomNavState extends State<BottomNav> {
                 child: Icon(Icons.add, color: Colors.white),
               ),
             ),
-            _buildNavItem(3, Icons.notifications_outlined, 'Alertes'),
-            _buildNavItem(4, Icons.person_outline, 'Profil'),
+            _buildNavItem(context, 3, Icons.notifications_outlined, 'Alertes'),
+            _buildNavItem(context, 4, Icons.person_outline, 'Profil'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label) {
-    bool isSelected = index == _selectedIndex;
+  Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
+    bool isSelected = index == widget.currentIndex;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedIndex = index;
-        });
+        if (index == widget.currentIndex) return;
 
-        if (index == 1) {
-          Navigator.push(
+        if (index == 0) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => HomeScreen()),
+          );
+        } else if (index == 1) {
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => SearchScreen()),
           );
+        } else if (index == 3) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => NotificationsScreen()),
+          );
         } else if (index == 4) {
-          Navigator.push(
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => ProfileScreen()),
           );
