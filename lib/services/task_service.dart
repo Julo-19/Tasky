@@ -47,4 +47,14 @@ static Future<Task> updateTask(int id, Task task) async {
   }
 }
 
+static Future<void> deleteTask(int id) async {
+  final response = await http.delete(
+    Uri.parse('$baseUrl/task/$id'),
+    );
+
+    if(response.statusCode != 200 && response.statusCode != 204) {
+      throw Exception('Erreur lors de la suppression de la tache');
+    }
+}
+
 }

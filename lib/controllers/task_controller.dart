@@ -45,4 +45,9 @@ class TaskController {
     );
     return TaskService.updateTask(id, task);
   }
+
+  // Supprimer une tâche
+  Future<void> removeTask(int id) {
+    return TaskService.deleteTask(id);
+  }
 }

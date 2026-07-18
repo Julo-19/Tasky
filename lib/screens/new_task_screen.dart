@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/widgets/text_field.widget.dart';
 import 'package:tasky/widgets/priority_selector.widget.dart';
 import 'package:tasky/widgets/date_time_selector.widget.dart';
 import 'package:tasky/widgets/category_selector.widget.dart';
 import 'package:tasky/widgets/button.widget.dart';
-import 'package:tasky/controllers/task_controller.dart';
 
 class NewTaskScreen extends StatefulWidget {
   const NewTaskScreen({super.key});
@@ -23,7 +23,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   TimeOfDay _selectedTime = TimeOfDay(hour: 12, minute: 0);
 
   Future<void> _createTask() async {
-    // titre requires
+    // Validation : titre obligatoire
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Le titre est obligatoire')),
@@ -46,12 +46,28 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
         ),
       );
 
-      // Succès redirige home
+      // Succès redirige Home
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text('Tâche créée avec succès !'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        );
         Navigator.pop(context);
       }
     } catch (e) {
-      // Erreur
+      // Error message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erreur lors de la création')),
@@ -65,7 +81,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,6 +163,7 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 label: 'Créer la tâche',
                 onTap: _createTask,
               ),
+              SizedBox(height: 24),
             ],
           ),
         ),
