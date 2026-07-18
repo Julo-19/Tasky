@@ -31,4 +31,20 @@ class TaskService {
       throw Exception('Erreur lors de la creation de la tache');
     }
   }
+
+ 
+static Future<Task> updateTask(int id, Task task) async {
+  final response = await http.patch(
+    Uri.parse('$baseUrl/task/$id'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(task.toJson()),
+  );
+
+  if (response.statusCode == 200) {
+    return Task.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Erreur lors de la modification de la tache');
+  }
+}
+
 }

@@ -106,8 +106,7 @@ String _formatTime(DateTime? dueDate) {
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       return TaskItem(
-                        title: task.title,
-                        description: task.content,
+                        task: task,
                         time: _formatTime(task.dueDate),
                         priority: _priorityColor(task.priority),
                       );

@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:tasky/models/task_model.dart';
 import 'package:tasky/screens/edit_task_screen.dart';
 
 class TaskItem extends StatelessWidget {
-  final String title;
-  final String description;
+  final Task task;
   final String time;
   final Color priority;
 
   const TaskItem({
     super.key,
-    required this.title,
-    required this.description,
+    required this.task,
     required this.time,
     required this.priority,
   });
@@ -19,10 +18,10 @@ class TaskItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => EditTaskScreen()),
-        );
+       Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => EditTaskScreen(task: task)),
+      );
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 12),
@@ -66,7 +65,7 @@ class TaskItem extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              title,
+                              task.title,
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -75,7 +74,7 @@ class TaskItem extends StatelessWidget {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              description,
+                              task.content,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey,

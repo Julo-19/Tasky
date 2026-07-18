@@ -24,4 +24,25 @@ class TaskController {
     );
     return TaskService.createTask(task);
   }
+
+  //Update Task
+  Future<Task> editTask({
+    required int id,
+    required String title,
+    required String content,
+    required String priority,
+    required String color,
+    DateTime? dueDate,
+
+  }) {
+    //Object avec les news valeur
+    final task = Task(
+        title: title,
+        content: content,
+        priority: priority,
+        color: color,
+        dueDate: dueDate,
+    );
+    return TaskService.updateTask(id, task);
+  }
 }

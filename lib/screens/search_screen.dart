@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tasky/models/task_model.dart';
 import 'package:tasky/widgets/task_item.widget.dart';
 import 'package:tasky/widgets/bottom_nav_bar.widget.dart';
 
@@ -118,26 +119,42 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   SizedBox(height: 12),
                   TaskItem(
-                    title: 'Créer les maquettes sur Figma',
-                    description: 'Faire le prototypage interactif',
+                    task: Task(
+                      title: 'Créer les maquettes sur Figma',
+                      content: 'Faire le prototypage interactif',
+                      priority: 'Haute',
+                      color: 'red',
+                    ),
                     time: '10:00',
                     priority: Colors.red,
                   ),
                   TaskItem(
-                    title: 'Initialiser le projet Flutter',
-                    description: 'Configurer la structure des dossiers',
+                    task: Task(
+                      title: 'Initialiser le projet Flutter',
+                      content: 'Configurer la structure des dossiers',
+                      priority: 'Haute',
+                      color: 'red',
+                    ),
                     time: '14:00',
                     priority: Colors.red,
                   ),
                   TaskItem(
-                    title: 'Authentification',
-                    description: 'Implémenter écran de connexion et d\'inscription',
+                    task: Task(
+                      title: 'Authentification',
+                      content: 'Implémenter écran de connexion et d\'inscription',
+                      priority: 'Moyenne',
+                      color: 'orange',
+                    ),
                     time: '16:00',
                     priority: Colors.orange,
                   ),
                   TaskItem(
-                    title: 'Gestion des tâches',
-                    description: 'Créer une tâche (titre, description, date, priorité)',
+                    task: Task(
+                      title: 'Gestion des tâches',
+                      content: 'Créer une tâche (titre, description, date, priorité)',
+                      priority: 'Basse',
+                      color: 'green',
+                    ),
                     time: '19:00',
                     priority: Colors.green,
                   ),
