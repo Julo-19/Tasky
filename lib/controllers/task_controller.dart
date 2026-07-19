@@ -1,13 +1,21 @@
 import 'package:tasky/models/task_model.dart';
+import 'package:tasky/services/cache_service.dart';
 import 'package:tasky/services/task_service.dart';
 
 class TaskController {
-  // Récupérer les tâches
-  Future<List<Task>> fetchTasks() {
-    return TaskService.getTasks();
+  Future<List<Task>> fetchTasks() async {
+    try {
+      final tasks = await TaskService.getTasks();
+
+      await CacheService.saveTasks(tasks);
+      
+      return tasks;
+    } catch (e) {
+      return CacheService.getCachedTasks();
+    }
   }
 
-  // Créer une tâche
+  
   Future<Task> addTask({
     required String title,
     required String content,
@@ -25,7 +33,7 @@ class TaskController {
     return TaskService.createTask(task);
   }
 
-  //Update Task
+  
   Future<Task> editTask({
     required int id,
     required String title,
@@ -33,20 +41,18 @@ class TaskController {
     required String priority,
     required String color,
     DateTime? dueDate,
-
   }) {
-    //Object avec les news valeur
+    // Object avec les newa valeurs
     final task = Task(
-        title: title,
-        content: content,
-        priority: priority,
-        color: color,
-        dueDate: dueDate,
+      title: title,
+      content: content,
+      priority: priority,
+      color: color,
+      dueDate: dueDate,
     );
     return TaskService.updateTask(id, task);
   }
 
-  // Supprimer une tâche
   Future<void> removeTask(int id) {
     return TaskService.deleteTask(id);
   }

@@ -27,7 +27,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   @override
   void initState() {
     super.initState();
-    // Pré-remplissage avec les valeurs de la tâche reçue
+    
     _titleController = TextEditingController(text: widget.task.title);
     _contentController = TextEditingController(text: widget.task.content);
     _selectedPriority = widget.task.priority;
@@ -37,7 +37,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Future<void> _updateTask() async {
-    // Validation : titre obligatoire
+  
     if (_titleController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Le titre est obligatoire')),
@@ -61,7 +61,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
         ),
       );
 
-      // Succès → message + retour à la Home
+      // Succès redirige Home
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -91,12 +91,11 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
   }
 
   Future<void> _deleteTask() async {
-    // Demande de confirmation
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Supprimer la tâche ?'),
-        content: Text('Cette action est irréversible.'),
+        content: Text('Cette action est definitive.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -110,7 +109,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
       ),
     );
 
-    // Si l'utilisateur annule, on arrête
+    //  Si On annule la suppr
     if (confirm != true) return;
 
     try {
@@ -232,6 +231,7 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                 onTap: _updateTask,
               ),
               SizedBox(height: 12),
+              
               // Bouton Supprimer
               GestureDetector(
                 onTap: _deleteTask,
