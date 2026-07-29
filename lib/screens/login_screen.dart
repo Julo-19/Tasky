@@ -1,11 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:tasky/controllers/auth_controller.dart';
 import 'package:tasky/widgets/text_field.widget.dart';
 import 'package:tasky/widgets/button.widget.dart';
 import 'package:tasky/screens/register_screen.dart';
 import 'package:tasky/screens/home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final AuthController _authController = AuthController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    // Validation
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Tous les champs sont obligatoires')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authController.login(
+        username: _usernameController.text,
+        password: _passwordController.text,
+      );
+
+      // Succès → direction Home
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Identifiants incorrects')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +95,10 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 40),
             AppTextField(
-              label: 'Adresse Email',
-              hintText: 'souleymane@gmail.com',
-              prefixIcon: Icons.email_outlined,
+              label: 'Nom d\'utilisateur',
+              hintText: 'souleymane19',
+              prefixIcon: Icons.person_outline,
+              controller: _usernameController,
             ),
             SizedBox(height: 24),
             AppTextField(
@@ -53,6 +106,7 @@ class LoginScreen extends StatelessWidget {
               hintText: '••••••••••••',
               prefixIcon: Icons.lock_outline,
               obscureText: true,
+              controller: _passwordController,
             ),
             SizedBox(height: 8),
             Align(
@@ -71,17 +125,11 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 32),
             AppButton(
-              label: 'Se Connecter',
-              onTap: () {
-                Navigator.pushReplacement(
-                  context, 
-                  MaterialPageRoute(builder: (_) => HomeScreen()),
-                );
-              },
+              label: _isLoading ? 'Connexion...' : 'Se Connecter',
+              onTap: _isLoading ? () {} : _login,
             ),
             SizedBox(height: 24),
-
-            // Séparator
+            // Séparateur
             Row(
               children: [
                 Expanded(
@@ -142,8 +190,6 @@ class LoginScreen extends StatelessWidget {
                 ),
               ],
             ),
-
-        
             SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +219,7 @@ class LoginScreen extends StatelessWidget {
                 ),
               ],
             ),
-            
+            SizedBox(height: 24),
           ],
         ),
       ),

@@ -23,4 +23,25 @@ class CacheService {
     final List<dynamic> jsonList = jsonDecode(jsonString);
     return jsonList.map((json) => Task.fromJson(json)).toList();
   }
+
+  // token
+  static const String _tokenKey = 'token';
+
+ 
+  static Future<void> saveToken(String token) async {
+    final box = Hive.box(_boxName);
+    await box.put(_tokenKey, token);
+  }
+
+
+  static String? getToken() {
+    final box = Hive.box(_boxName);
+    return box.get(_tokenKey);
+  }
+
+  // Supprimer le token LOGOUT
+  static Future<void> deleteToken() async {
+    final box = Hive.box(_boxName);
+    await box.delete(_tokenKey);
+  }
 }

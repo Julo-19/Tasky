@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class HomeFilter extends StatefulWidget {
-  const HomeFilter({super.key});
+  final ValueChanged<String>? onChanged;
+
+  const HomeFilter({super.key, this.onChanged});
 
   @override
   State<HomeFilter> createState() => _HomeFilterState();
@@ -23,6 +25,7 @@ Widget build(BuildContext context) {
           setState(() {
             _selectedIndex = index;
           });
+          widget.onChanged?.call(filter);
         },
         child: Container(
           margin: EdgeInsets.only(right: 8),

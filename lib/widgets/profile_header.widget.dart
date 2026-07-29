@@ -94,11 +94,11 @@ class ProfileHeader extends StatelessWidget {
           SizedBox(height: 20),
           Row(
             children: [
-              Expanded(child: StatCard(value: completedCount, label: 'Terminées')),
+              Expanded(child: StatCard(value: completedCount, label: 'Total')),
               SizedBox(width: 8),
-              Expanded(child: StatCard(value: inProgressCount, label: 'En cours')),
+              Expanded(child: StatCard(value: inProgressCount, label: 'Aujourd\'hui')),
               SizedBox(width: 8),
-              Expanded(child: StatCard(value: regularity, label: 'Régularité')),
+              Expanded(child: StatCard(value: regularity, label: 'À venir')),
             ],
           ),
         ],

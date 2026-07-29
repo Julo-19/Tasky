@@ -1,13 +1,26 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tasky/models/task_model.dart';
+import 'package:tasky/services/cache_service.dart';
 
 class TaskService {
   static const String baseUrl = 'http://localhost:3000';
 
+  // Construit les headers avec le token
+  static Map<String, String> _headers() {
+    final token = CacheService.getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
 
+  // Récupérer toutes les tâches
   static Future<List<Task>> getTasks() async {
-    final response = await http.get(Uri.parse('$baseUrl/task'));
+    final response = await http.get(
+      Uri.parse('$baseUrl/task'),
+      headers: _headers(),
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(response.body);
@@ -17,11 +30,11 @@ class TaskService {
     }
   }
 
-  
+  // Créer une tâche
   static Future<Task> createTask(Task task) async {
     final response = await http.post(
       Uri.parse('$baseUrl/task'),
-      headers: {'Content-Type' : 'application/json'},
+      headers: _headers(),
       body: jsonEncode(task.toJson()),
     );
 
@@ -32,29 +45,30 @@ class TaskService {
     }
   }
 
- 
-static Future<Task> updateTask(int id, Task task) async {
-  final response = await http.patch(
-    Uri.parse('$baseUrl/task/$id'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode(task.toJson()),
-  );
-
-  if (response.statusCode == 200) {
-    return Task.fromJson(jsonDecode(response.body));
-  } else {
-    throw Exception('Erreur lors de la modification de la tache');
-  }
-}
-
-static Future<void> deleteTask(int id) async {
-  final response = await http.delete(
-    Uri.parse('$baseUrl/task/$id'),
+  // Modifier une tâche
+  static Future<Task> updateTask(int id, Task task) async {
+    final response = await http.patch(
+      Uri.parse('$baseUrl/task/$id'),
+      headers: _headers(),
+      body: jsonEncode(task.toJson()),
     );
 
-    if(response.statusCode != 200 && response.statusCode != 204) {
+    if (response.statusCode == 200) {
+      return Task.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Erreur lors de la modification de la tache');
+    }
+  }
+
+  // Supprimer une tâche
+  static Future<void> deleteTask(int id) async {
+    final response = await http.delete(
+      Uri.parse('$baseUrl/task/$id'),
+      headers: _headers(),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Erreur lors de la suppression de la tache');
     }
-}
-
+  }
 }

@@ -4,7 +4,9 @@ import 'package:tasky/widgets/filter_bottom_sheet.widget.dart';
 import 'home_progress_card.widget.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({super.key});
+  final String prenom;
+
+  const HomeHeader({super.key, this.prenom= ''});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,7 @@ class HomeHeader extends StatelessWidget {
         children: [
           // Salutation
           Text(
-            'Bonjour, Souleymane !',
+              prenom.isEmpty ? 'Bonjour !' : 'Bonjour, $prenom !',
             style: TextStyle(
               fontSize: 16,
               color: Colors.white70,

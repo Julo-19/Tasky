@@ -5,6 +5,7 @@ import 'package:tasky/widgets/task_item.widget.dart';
 import 'package:tasky/widgets/bottom_nav_bar.widget.dart';
 import 'package:tasky/models/task_model.dart';
 import 'package:tasky/controllers/task_controller.dart';
+import 'package:tasky/controllers/auth_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,49 +16,72 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TaskController _taskController = TaskController();
+  final AuthController _authController = AuthController();
   late Future<List<Task>> _tasksFuture;
+  String _selectedFilter = 'Aujourd\'hui';
+  String _prenom = ''; 
 
   @override
   void initState() {
     super.initState();
     _tasksFuture = _taskController.fetchTasks();
+    _loadProfile();  
   }
+
+    // Charge le prénom de l'utilisateur
+  Future<void> _loadProfile() async {
+    try {
+      final profile = await _authController.getProfile();
+      if (mounted) {
+        setState(() {
+          _prenom = profile['prenom'] ?? '';
+        });
+      }
+    } catch (e) {
+      // En cas d'erreur, on garde le prénom vide (pas grave)
+    }
+  }
+  
 
   Color _priorityColor(String priority) {
-  switch (priority) {
-    case 'Haute':
-      return Colors.red;
-    case 'Moyenne':
-      return Colors.orange;
-    case 'Basse':
-      return Colors.green;
-    default:
-      return Colors.grey;
-  }
-}
-
-String _formatTime(DateTime? dueDate) {
-  if (dueDate == null) return '';
-  final local = dueDate.toLocal();
-  final now = DateTime.now();
-  final hour = local.hour.toString().padLeft(2, '0');
-  final minute = local.minute.toString().padLeft(2, '0');
-  final time = '$hour:$minute';
-
-  // Aujourd'hui
-  if (local.day == now.day && local.month == now.month && local.year == now.year) {
-    return 'Aujourd\'hui $time';
+    switch (priority) {
+      case 'Haute':
+        return Colors.red;
+      case 'Moyenne':
+        return Colors.orange;
+      case 'Basse':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
   }
 
-  
-  final tomorrow = now.add(Duration(days: 1));
-  if (local.day == tomorrow.day && local.month == tomorrow.month && local.year == tomorrow.year) {
-    return 'Demain $time';
-  }
+  String _formatTime(DateTime? dueDate) {
+    if (dueDate == null) return '';
+    final local = dueDate.toLocal();
+    final now = DateTime.now();
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    final time = '$hour:$minute';
 
-  // Sinon la date
-  return '${local.day}/${local.month} $time';
-}
+    // Aujourd'hui
+    if (local.day == now.day &&
+        local.month == now.month &&
+        local.year == now.year) {
+      return 'Aujourd\'hui $time';
+    }
+
+    // Demain
+    final tomorrow = now.add(Duration(days: 1));
+    if (local.day == tomorrow.day &&
+        local.month == tomorrow.month &&
+        local.year == tomorrow.year) {
+      return 'Demain $time';
+    }
+
+    // Sinon la date
+    return '${local.day}/${local.month} $time';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +90,16 @@ String _formatTime(DateTime? dueDate) {
       bottomNavigationBar: BottomNav(currentIndex: 0),
       body: Column(
         children: [
-          HomeHeader(),
+          HomeHeader(prenom: _prenom),
           Padding(
             padding: EdgeInsets.fromLTRB(24, 24, 24, 0),
-            child: HomeFilter(),
+            child: HomeFilter(
+              onChanged: (filter) {
+                setState(() {
+                  _selectedFilter = filter;
+                });
+              },
+            ),
           ),
           SizedBox(height: 16),
           Expanded(
@@ -86,13 +116,34 @@ String _formatTime(DateTime? dueDate) {
                   return Center(child: Text('Erreur : ${snapshot.error}'));
                 }
 
-                // Données reçues
-                final tasks = snapshot.data!;
+                final allTasks = snapshot.data!;
+                final tasks =
+                    _taskController.filterTasks(allTasks, _selectedFilter);
 
-                if (tasks.isEmpty) {
-                  return Center(child: Text('Aucune tâche pour le moment'));
-                }
-
+               if (tasks.isEmpty) {
+                return RefreshIndicator(
+                  color: Color(0xFFFF6B5C),
+                  onRefresh: () async {
+                    setState(() {
+                      _tasksFuture = _taskController.fetchTasks();
+                    });
+                  },
+                  child: ListView(
+                    children: [
+                      SizedBox(height: 200),
+                      Center(
+                        child: Text(
+                          _selectedFilter == 'Terminées'
+                              ? 'Aucune tâche terminée'
+                              : 'Aucune tâche ${_selectedFilter == 'À venir' ? 'à venir' : 'pour aujourd\'hui'}',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            
                 return RefreshIndicator(
                   color: Color(0xFFFF6B5C),
                   onRefresh: () async {

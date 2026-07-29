@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tasky/controllers/task_controller.dart';
 import 'package:tasky/models/task_model.dart';
 import 'package:tasky/widgets/task_item.widget.dart';
 import 'package:tasky/widgets/bottom_nav_bar.widget.dart';
@@ -11,6 +12,38 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  final TaskController _taskController = TaskController();
+  final TextEditingController _searchController = TextEditingController();
+  late Future<List<Task>> _tasksFuture;
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _tasksFuture = _taskController.fetchTasks();
+  }
+
+  Color _priorityColor(String priority) {
+    switch (priority) {
+      case 'Haute':
+        return Colors.red;
+      case 'Moyenne':
+        return Colors.orange;
+      case 'Basse':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _formatTime(DateTime? dueDate) {
+    if (dueDate == null) return '';
+    final local = dueDate.toLocal();
+    final hour = local.hour.toString().padLeft(2, '0');
+    final minute = local.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
       bottomNavigationBar: BottomNav(currentIndex: 1),
       body: Column(
         children: [
-          // Header blanc
+          // Header
           SafeArea(
             bottom: false,
             child: Container(
@@ -27,25 +60,25 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                 Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Icon(Icons.arrow_back, color: Color(0xFF1A1A2E)),
-                    ),
-                    SizedBox(width: 12),
-                    Text(
-                      'Recherche',
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF1A1A2E),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(Icons.arrow_back, color: Color(0xFF1A1A2E)),
                       ),
-                    ),
-                  ],
-                ),
+                      SizedBox(width: 12),
+                      Text(
+                        'Recherche',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1A1A2E),
+                        ),
+                      ),
+                    ],
+                  ),
                   SizedBox(height: 16),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 16),
@@ -54,6 +87,12 @@ class _SearchScreenState extends State<SearchScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) {
+                        setState(() {
+                          _query = value;
+                        });
+                      },
                       decoration: InputDecoration(
                         hintText: 'Recherche par titre...',
                         prefixIcon: Icon(Icons.search, color: Colors.grey),
@@ -65,101 +104,44 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
           ),
-          // Contenu sur fond gris
+          // Résultats
           Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'RECHERCHES RÉCENTES',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                      letterSpacing: 0.5,
+            child: FutureBuilder<List<Task>>(
+              future: _tasksFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Erreur : ${snapshot.error}'));
+                }
+
+                final allTasks = snapshot.data!;
+                final results = _taskController.searchTasks(allTasks, _query);
+
+                if (results.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'Aucun résultat',
+                      style: TextStyle(color: Colors.grey),
                     ),
-                  ),
-                  SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: ['Projet', 'Réunion', 'Études'].map((item) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.history, size: 14, color: Colors.grey),
-                            SizedBox(width: 6),
-                            Text(
-                              item,
-                              style: TextStyle(fontSize: 13, color: Color(0xFF1A1A2E)),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  SizedBox(height: 24),
-                  Text(
-                    'SUGGESTIONS',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  SizedBox(height: 12),
-                  TaskItem(
-                    task: Task(
-                      title: 'Créer les maquettes sur Figma',
-                      content: 'Faire le prototypage interactif',
-                      priority: 'Haute',
-                      color: 'red',
-                    ),
-                    time: '10:00',
-                    priority: Colors.red,
-                  ),
-                  TaskItem(
-                    task: Task(
-                      title: 'Initialiser le projet Flutter',
-                      content: 'Configurer la structure des dossiers',
-                      priority: 'Haute',
-                      color: 'red',
-                    ),
-                    time: '14:00',
-                    priority: Colors.red,
-                  ),
-                  TaskItem(
-                    task: Task(
-                      title: 'Authentification',
-                      content: 'Implémenter écran de connexion et d\'inscription',
-                      priority: 'Moyenne',
-                      color: 'orange',
-                    ),
-                    time: '16:00',
-                    priority: Colors.orange,
-                  ),
-                  TaskItem(
-                    task: Task(
-                      title: 'Gestion des tâches',
-                      content: 'Créer une tâche (titre, description, date, priorité)',
-                      priority: 'Basse',
-                      color: 'green',
-                    ),
-                    time: '19:00',
-                    priority: Colors.green,
-                  ),
-                ],
-              ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: EdgeInsets.all(24),
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    final task = results[index];
+                    return TaskItem(
+                      task: task,
+                      time: _formatTime(task.dueDate),
+                      priority: _priorityColor(task.priority),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
