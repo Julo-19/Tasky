@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: _passwordController.text,
       );
 
-      // Succès → direction Home
+    
       if (mounted) {
         Navigator.pushReplacement(
           context,

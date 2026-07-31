@@ -28,7 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadStats();
   }
 
-  // Charge les tâches et calcule les stats
+  // Looad les stats tasks
   Future<void> _loadStats() async {
     try {
       final tasks = await _taskController.fetchTasks();
@@ -38,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      // En cas d'erreur, on garde les stats à 0
+      // En cas d'erreur on garde les stats à 0
     }
   }
 
@@ -62,6 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           final nom = profile['nom'] ?? '';
           final prenom = profile['prenom'] ?? '';
           final email = profile['email'] ?? '';
+          final photo = profile['photo'] as String?;
           final fullName = '$prenom $nom';
           final initials = _getInitials(prenom, nom);
 
@@ -71,6 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 name: fullName,
                 email: email,
                 initials: initials,
+                photoBase64: photo,
                 completedCount: '${_stats['total']}',
                 inProgressCount: '${_stats['today']}',
                 regularity: '${_stats['upcoming']}',

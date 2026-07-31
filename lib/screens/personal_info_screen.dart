@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tasky/controllers/auth_controller.dart';
 import 'package:tasky/widgets/text_field.widget.dart';
@@ -25,6 +26,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late TextEditingController _prenomController;
   late TextEditingController _emailController;
   bool _isLoading = false;
+  String? _photoBase64;
 
   @override
   void initState() {
@@ -32,6 +34,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     _nomController = TextEditingController(text: widget.nom);
     _prenomController = TextEditingController(text: widget.prenom);
     _emailController = TextEditingController(text: widget.email);
+  }
+
+  Future<void> _pickPhoto() async {
+    final result = await _authController.pickProfileImage();
+    if (result != null) {
+      setState(() {
+        _photoBase64 = result;
+      });
+    }
   }
 
   Future<void> _save() async {
@@ -53,6 +64,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         nom: _nomController.text,
         prenom: _prenomController.text,
         email: _emailController.text,
+        photo: _photoBase64,
       );
 
       if (mounted) {
@@ -123,7 +135,68 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 32),
+              SizedBox(height: 24),
+              // Avatar cliquable
+              Center(
+                child: GestureDetector(
+                  onTap: _pickPhoto,
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFFFF6B5C).withOpacity(0.15),
+                          image: _photoBase64 != null
+                              ? DecorationImage(
+                                  image: MemoryImage(
+                                      base64Decode(_photoBase64!)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: _photoBase64 == null
+                            ? Icon(
+                                Icons.person,
+                                size: 40,
+                                color: Color(0xFFFF6B5C),
+                              )
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFF6B5C),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 2),
+                          ),
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 8),
+              Center(
+                child: Text(
+                  'Modifier la photo',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+              SizedBox(height: 24),
               AppTextField(
                 label: 'Nom',
                 hintText: 'BARRO',

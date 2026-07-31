@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tasky/widgets/home_progress_card.widget.dart';
-import 'package:tasky/widgets/filter_bottom_sheet.widget.dart';
-import 'home_progress_card.widget.dart';
 
 class HomeHeader extends StatelessWidget {
   final String prenom;
+  final VoidCallback? onFilterTap;
 
-  const HomeHeader({super.key, this.prenom= ''});
+  const HomeHeader({super.key, this.prenom = '', this.onFilterTap});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +24,7 @@ class HomeHeader extends StatelessWidget {
         children: [
           // Salutation
           Text(
-              prenom.isEmpty ? 'Bonjour !' : 'Bonjour, $prenom !',
+            prenom.isEmpty ? 'Bonjour !' : 'Bonjour, $prenom !',
             style: TextStyle(
               fontSize: 16,
               color: Colors.white70,
@@ -44,13 +43,7 @@ class HomeHeader extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => FilterBottomSheet(),
-                  );
-                },
+                onTap: onFilterTap,
                 child: Container(
                   padding: EdgeInsets.all(10),
                   decoration: BoxDecoration(

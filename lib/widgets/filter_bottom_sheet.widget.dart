@@ -2,13 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:tasky/widgets/button.widget.dart';
 
 class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key});
+  final String selectedPriority;
+
+  const FilterBottomSheet({super.key, this.selectedPriority = 'Toutes'});
 
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
 
 class _FilterBottomSheetState extends State<FilterBottomSheet> {
+  late String _selected;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.selectedPriority;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +46,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                 ),
               ),
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  setState(() {
+                    _selected = 'Toutes';
+                  });
+                },
                 child: Text(
                   'Réinitialiser',
                   style: TextStyle(
@@ -49,11 +63,11 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ],
           ),
           SizedBox(height: 24),
-          _buildPriorityOption('Priorité Haute', Colors.red),
+          _buildPriorityOption('Haute', 'Priorité Haute', Colors.red),
           SizedBox(height: 12),
-          _buildPriorityOption('Priorité Moyenne', Colors.orange),
+          _buildPriorityOption('Moyenne', 'Priorité Moyenne', Colors.orange),
           SizedBox(height: 12),
-          _buildPriorityOption('Priorité Basse', Colors.green),
+          _buildPriorityOption('Basse', 'Priorité Basse', Colors.green),
           SizedBox(height: 24),
           Text(
             'TRIER PAR',
@@ -94,7 +108,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           AppButton(
             label: 'Appliquer les filtres',
             onTap: () {
-              Navigator.pop(context);
+              Navigator.pop(context, _selected);
             },
           ),
         ],
@@ -102,37 +116,53 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
     );
   }
 
-  Widget _buildPriorityOption(String label, Color color) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(Icons.flag, color: color, size: 18),
+  Widget _buildPriorityOption(String value, String label, Color color) {
+    bool isSelected = _selected == value;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selected = isSelected ? 'Toutes' : value;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? color : Colors.transparent,
+            width: 1.5,
           ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1A1A2E),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.flag, color: color, size: 18),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF1A1A2E),
+                ),
               ),
             ),
-          ),
-          Icon(Icons.circle_outlined, color: Colors.grey.shade300),
-        ],
+            Icon(
+              isSelected ? Icons.check_circle : Icons.circle_outlined,
+              color: isSelected ? color : Colors.grey.shade300,
+            ),
+          ],
+        ),
       ),
     );
   }

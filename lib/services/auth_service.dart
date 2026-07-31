@@ -5,7 +5,6 @@ import 'package:tasky/services/cache_service.dart';
 class AuthService {
   static const String baseUrl = 'http://localhost:3000';
 
-  // Register
   static Future<void> register({
     required String nom,
     required String prenom,
@@ -72,25 +71,32 @@ class AuthService {
   }
 
   // Update profil
-  static Future<void> updateProfile({
+ static Future<void> updateProfile({
     required String nom,
     required String prenom,
     required String email,
+    String? photo,
   }) async {
     final token = CacheService.getToken();
+    final body = {
+      'nom': nom,
+      'prenom': prenom,
+      'email': email,
+    };
+    if (photo != null) {
+      body['photo'] = photo;
+    }
+
     final response = await http.put(
       Uri.parse('$baseUrl/auths/profils'),
       headers: {
         'Content-Type': 'application/json',
         if (token != null) 'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        'nom': nom,
-        'prenom': prenom,
-        'email': email,
-      }),
+      body: jsonEncode(body),
     );
-
+    // print('📋 updateProfile statusCode : ${response.statusCode}');
+    // print('📋 updateProfile body       : ${response.body}');
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Erreur lors de la modification du profil');
     }

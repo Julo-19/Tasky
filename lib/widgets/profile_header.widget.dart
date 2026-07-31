@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:tasky/widgets/stat_card.widget.dart';
 
@@ -5,6 +6,7 @@ class ProfileHeader extends StatelessWidget {
   final String name;
   final String email;
   final String initials;
+  final String? photoBase64;
   final String completedCount;
   final String inProgressCount;
   final String regularity;
@@ -15,6 +17,7 @@ class ProfileHeader extends StatelessWidget {
     required this.name,
     required this.email,
     required this.initials,
+    this.photoBase64,
     required this.completedCount,
     required this.inProgressCount,
     required this.regularity,
@@ -23,6 +26,8 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasPhoto = photoBase64 != null && photoBase64!.isNotEmpty;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(24, 60, 24, 24),
@@ -43,17 +48,25 @@ class ProfileHeader extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
+                  image: hasPhoto
+                      ? DecorationImage(
+                          image: MemoryImage(base64Decode(photoBase64!)),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
                 ),
-                child: Center(
-                  child: Text(
-                    initials,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18,
-                    ),
-                  ),
-                ),
+                child: hasPhoto
+                    ? null
+                    : Center(
+                        child: Text(
+                          initials,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
               ),
               SizedBox(width: 12),
               Expanded(

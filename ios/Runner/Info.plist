@@ -47,5 +47,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+<string>Tasky a besoin d'accéder à vos photos pour choisir une image de profil.</string>
+<key>NSCameraUsageDescription</key>
+<string>Tasky a besoin d'accéder à votre appareil photo pour prendre une photo de profil.</string>
 </dict>
 </plist>

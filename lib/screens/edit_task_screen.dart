@@ -175,6 +175,15 @@ class _EditTaskScreenState extends State<EditTaskScreen> {
                       color: Color(0xFF1A1A2E),
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(
+                      onTap: () {
+                        _taskController.shareTask(widget.task);
+                      },
+                      child: Icon(Icons.share_outlined, size: 22),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(height: 24),

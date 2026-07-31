@@ -2,9 +2,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tasky/models/task_model.dart';
 import 'package:tasky/services/cache_service.dart';
+import 'dart:io' show Platform;
 
 class TaskService {
-  static const String baseUrl = 'http://localhost:3000';
+  // static const String baseUrl = 'http://localhost:3000';
+
+    static String get baseUrl {
+    if (Platform.isAndroid) {
+      return 'http://10.0.2.2:3000';
+    }
+    return 'http://localhost:3000';
+  }
 
   // Construit les headers avec le token
   static Map<String, String> _headers() {
